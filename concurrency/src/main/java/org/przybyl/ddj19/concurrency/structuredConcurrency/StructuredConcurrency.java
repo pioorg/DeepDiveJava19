@@ -23,9 +23,8 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-/**
- * Created by Piotr Przybył (piotr@przybyl.org).
- */
+// don't forget about
+// --add-modules jdk.incubator.concurrent
 public class StructuredConcurrency {
 
     static NameService nameService = new NameService();
@@ -119,9 +118,9 @@ record UserScore(int id, int score) {
 
 class NameService {
     List<UserName> getNames() {
-//        oops();
+//        StructuredConcurrency.oops();
         sneakySleep(1_000);
-//        oops();
+//        StructuredConcurrency.oops();
         return List.of(
             new UserName(1, "Joe"),
             new UserName(2, "Susan"),
@@ -134,9 +133,9 @@ class NameService {
 
 class ScoreService {
     List<UserScore> getScores() {
-//        oops();
+//        StructuredConcurrency.oops();
         sneakySleep(1_000);
-//        oops();
+//        StructuredConcurrency.oops();
         return List.of(
             new UserScore(1, 100),
             new UserScore(2, 100),

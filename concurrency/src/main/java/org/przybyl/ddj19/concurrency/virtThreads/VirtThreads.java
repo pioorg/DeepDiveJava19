@@ -16,6 +16,10 @@
  */
 package org.przybyl.ddj19.concurrency.virtThreads;
 
+import java.net.*;
+import java.net.http.*;
+import java.time.*;
+
 /**
  * Created by Piotr Przybył (piotr@przybyl.org)
  */
@@ -31,6 +35,24 @@ public class VirtThreads {
             System.out.println();
 
         }).join();
+
+        if (args.length > 0) {
+            var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
+            var request = HttpRequest.newBuilder(URI.create(args[0])).GET().build();
+            getGreetings(client, request, 20);
+        }
+    }
+
+    public static void getGreetings(HttpClient client, HttpRequest request, int times) throws InterruptedException {
+        Thread last = null;
+        for (int i = 0; i < times; i++) {
+            final var c = i;
+            var g = new GreetingObtainer();
+            last = Thread.startVirtualThread(() -> g.getGreeting(client, request, c));
+            System.out.print(("[ Created " + c + "] "));
+        }
+        System.out.println();
+        last.join();
     }
 }
 

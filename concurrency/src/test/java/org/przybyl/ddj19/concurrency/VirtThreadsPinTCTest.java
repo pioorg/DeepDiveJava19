@@ -56,7 +56,7 @@ class VirtThreadsPinTCTest {
             proxy.toxics().latency("latency", ToxicDirection.DOWNSTREAM, 500).setJitter(50);
 
             // preparing the artifact to be copied
-            var jar = MountableFile.forHostPath(Paths.get("target/concurrency-1.0-SNAPSHOT.jar").toAbsolutePath());
+            var jar = MountableFile.forHostPath(Paths.get("target/concurrency-1.0-SNAPSHOT.jar"));
 
             try (var container = new GenericContainer<>("eclipse-temurin:19-alpine")
                 .withNetwork(network)

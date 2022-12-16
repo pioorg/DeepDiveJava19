@@ -17,20 +17,18 @@
 package org.przybyl.ddj19;
 
 public class App {
-	public static void main(String[] args) {
+    public static void main(String[] args) {
+        Object version = Runtime.version().feature();
+        String greeting = getGreeting(version);
+        System.out.println(greeting);
+    }
 
-		Object version = Runtime.version().feature();
-		String greeting = getGreeting(version);
-		System.out.println(greeting);
-
-	}
-
-	private static String getGreeting(Object version) {
-		return switch (version) {
-			case null -> throw new IllegalArgumentException("Impossible!");
-			case Integer i when (i >= 17) -> "Hello, this is Java™ "+ i + " ;-)";
-			case Integer i -> i +"? But how?";
-			default -> "oops...";
-		};
-	}
+    private static String getGreeting(Object version) {
+        return switch (version) {
+            case null -> throw new IllegalArgumentException("Impossible!");
+            case Integer i when(i >= 17) -> "Hello, this is Java™ " + i + " ;-)";
+            case Integer i -> i + "? But how?";
+            default -> "oops...";
+        };
+    }
 }

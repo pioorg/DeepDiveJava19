@@ -31,35 +31,30 @@ import java.util.stream.*;
 class VirtThreadsPinTCTest {
 
     @Test
-    @Disabled
+//    @Disabled
     public void shouldNotPin() throws IOException {
 
-        // let's prepare the network for the containers
-        var network = Network.newNetwork();
         // we're going to copy this file from resources to nginx container
         var index = MountableFile.forClasspathResource("index.html");
 
         try (
             var nginx = new NginxContainer<>("nginx:1.23.1")
                 .withCopyFileToContainer(index, "/usr/share/nginx/html/index.html")
-                .waitingFor(new HttpWaitStrategy())
-                .withNetwork(network);
-            var toxiProxy = new ToxiproxyContainer("ghcr.io/shopify/toxiproxy:2.5.0")
-                .withNetwork(network)
+                .waitingFor(new HttpWaitStrategy());
+            var toxiproxy = new ToxiproxyContainer("ghcr.io/shopify/toxiproxy:2.5.0")
                 .withNetworkAliases("toxiproxy")
         ) {
             // starting both containers in parallel
-            Stream.of(nginx, toxiProxy).parallel().forEach(GenericContainer::start);
+            Stream.of(nginx, toxiproxy).parallel().forEach(GenericContainer::start);
 
             // creating intoxicated connection to be used between our client and nginx
-            var proxy = toxiProxy.getProxy(nginx, 80);
+            var proxy = toxiproxy.getProxy(nginx, 80);
             proxy.toxics().latency("latency", ToxicDirection.DOWNSTREAM, 500).setJitter(50);
 
             // preparing the artifact to be copied
             var jar = MountableFile.forHostPath(Paths.get("target/concurrency-1.0-SNAPSHOT.jar"));
 
             try (var container = new GenericContainer<>("eclipse-temurin:19-alpine")
-                .withNetwork(network)
                 .withCopyFileToContainer(jar, "/tmp/test.jar")
                 .withExposedPorts(8000)
                 .withCommand("jwebserver")) {
@@ -67,7 +62,7 @@ class VirtThreadsPinTCTest {
                 // starting container for the client with the client already copied
                 container.start();
 
-                // where the client should call using the network between the containers
+                // where the client should call
                 var uriFromContainer = String.format("http://%s:%d/", "toxiproxy", proxy.getOriginalProxyPort());
 
                 Assertions.assertDoesNotThrow(() -> {

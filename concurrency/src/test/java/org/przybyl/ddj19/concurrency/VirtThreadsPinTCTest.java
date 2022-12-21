@@ -31,7 +31,7 @@ import java.util.stream.*;
 class VirtThreadsPinTCTest {
 
     @Test
-//    @Disabled
+    @Disabled
     public void shouldNotPin() throws IOException {
 
         // we're going to copy this file from resources to nginx container
